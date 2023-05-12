@@ -1,0 +1,65 @@
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="siat_server_list">
+            <field name="name">SIAT Servers list</field>
+            <field name="model">siat.server</field>
+            <field name="arch" type="xml">
+                <tree string="Invoicing Servers">
+                    <field name="name"/>
+                    <field name="service_id"/>
+                    <field name="url_root"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="siat_server_form">
+            <field name="name">SIAT Invoicing server form</field>
+            <field name="model">siat.server</field>
+            <field name="arch" type="xml">
+                <form string="Invoicing server">
+                    <header>
+                        <button name="set_enable" type="object" string="Enable Server" attrs="{'invisible':[('state','=', 'enable')]}" />
+                        <button name="set_disable" type="object" string="Disable Server" attrs="{'invisible':[('state','=', 'disable')]}" />
+                        <button name="auth_service" type="object" string="Authenticate" attrs="{'invisible':[('state','=', 'disable')]}" />
+
+                        <field name="state" widget="statusbar"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" placeholder="Reference"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="service_id"/>
+                                <field name="user_login"/>
+                                <field name="user_password" password="1"/>
+                            </group>
+                            <group>
+                                <field name="use_root"/>
+                                <field name="url_root" attrs="{'invisible':[('use_root', '=', False)]}"/>
+                                <field name="token" readonly="1" />
+                                <field name="validity" readonly="1"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="URLs">
+                                <field name="url_endpoints" widget="ace" options="{'mode': 'python'}" nolabel="1"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="siat_server_action">
+            <field name="name">SIAT Invoicing servers</field>
+            <field name="res_model">siat.server</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem name="SIAT servers" id="siat_server_menu" action="siat_server_action" parent="account.menu_finance_configuration"/>
+
+    </data>
+</odoo>

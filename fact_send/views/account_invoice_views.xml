@@ -1,0 +1,60 @@
+<odoo>
+    <data>
+
+        <record id="siat_accmoveform_inherit" model="ir.ui.view">
+            <field name="name">siat.account_move_form.inherit</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.invoice_form"/>
+            <field name="arch" type="xml">
+                <!-- <xpath expr="//notebook" position="inside">
+                    <page string="Electronic invoicing">
+                        <group>
+                            <group>
+                                <field name="cod_recepcion" readonly="1"/>
+                                <field name="estado_emision" readonly="1"/>
+                                <field name="fecha_emision" readonly="1"/>
+                                <field name="cuf" readonly="1"/>
+                                <field name="cuis" readonly="1"/>
+                                <field name="cufd" readonly="1"/>
+                                <field name="codigo_control" readonly="1"/>
+                                <field name="link_qr" readonly="1"/>
+                                <field name="codigo_error" readonly="1"/>
+                                <field name="mensaje_respuesta" readonly="1"/>
+                            </group>
+                            <group>
+
+                            </group>
+                        </group>
+                    </page>
+                </xpath> -->
+                <xpath expr="//header/button[1]" position="after">
+                    <field name="cuis" invisible="1"/>
+                    <button name="post_electronic_invoice" type="object" string="Electronic Invoice" attrs="{'invisible': [('cuis', '!=', '_')]}"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="siat_accmoveform_inherit1" model="ir.ui.view">
+            <field name="name">siat.account_move_form.inherit</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="fact_electronica.account_invoice_form_fact"/>
+            <field name="arch" type="xml">
+                <xpath expr="//group[1]" position="after">
+                    <group colspan="4" col="4">
+                        <field name="cod_recepcion" readonly="1"/>
+                        <field name="estado_emision" readonly="1"/>
+                        <field name="fecha_emision" readonly="1"/>
+                        <field name="cuf" readonly="1"/>
+                        <field name="cuis" readonly="1"/>
+                        <field name="cufd" readonly="1"/>
+                        <field name="codigo_control" readonly="1"/>
+                        <field name="link_qr" readonly="1"/>
+                        <field name="codigo_error" readonly="1"/>
+                        <field name="mensaje_respuesta" readonly="1"/>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>
