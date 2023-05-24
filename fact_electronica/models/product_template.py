@@ -13,5 +13,5 @@ class ProductTemplate(models.Model):
                              string='Unidad SIN',
                              default='47',
                              index=True)
-    cod_sin = fields.Char(string='Codigo producto SIN', default="611629")
-    actividad_sin = fields.Char(string='Actividad SIN', default="466300")
+    cod_sin = fields.Char(string='Codigo producto SIN', default="99100")
+    actividad_sin = fields.Char(string='Actividad SIN', default="464000")
