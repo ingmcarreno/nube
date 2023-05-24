@@ -33,13 +33,13 @@
                         <group>
                             <group>
                                 <field name="service_id"/>
-                                <field name="user_login"/>
-                                <field name="user_password" password="1"/>
+                                <field name="username"/>
+                                <field name="password" password="1"/>
                             </group>
                             <group>
                                 <field name="use_root"/>
                                 <field name="url_root" attrs="{'invisible':[('use_root', '=', False)]}"/>
-                                <field name="token" readonly="1" />
+                                <field name="id_token" readonly="1" />
                                 <field name="validity" readonly="1"/>
                             </group>
                         </group>
