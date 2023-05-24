@@ -17,15 +17,15 @@ class SIATServer(models.Model):
     ], string='Environment', default='test')
 
     name = fields.Char('Name Reference')
-    user_login = fields.Char('User')
-    user_password = fields.Char('Password')
-    use_root = fields.Boolean('Use root address', default=True)
+    username = fields.Char('User')
+    password = fields.Char('Password')
+    rememberMe = fields.Boolean('Recordarme', default=True)
     service_id = fields.Char('Service ID')
     url_root = fields.Char('Server root URL')
     url_endpoints = fields.Text('Enpoints', help='dictionary', default="""{
-        'auth': 'account/authenticate',
-        'cancel': 'cancel',
-        'compraventa': '',
+        'auth': 'api/authenticate',
+        'cancel': '/api/integrations/cancel',
+        'compraventa': '/api/integrations/create-invoice/buy-and-sell',
     }""")
     token = fields.Char('Token', default='')
     state = fields.Selection(
@@ -49,7 +49,7 @@ class SIATServer(models.Model):
             expiration = fields.datetime.strptime(
                 str_date, '%Y-%m-%d %H:%M:%S')
             self.write({
-                'token': result['token'],
+                'id_token': result['id_token'],
                 'validity': expiration + timedelta(hours=4)
             })
             return True
@@ -67,8 +67,8 @@ class SIATServer(models.Model):
         headers = {
             'Content-type': 'application/json',
         }
-        if self.token != '':
-            headers.update({'Authorization': 'Bearer %s' % self.token})
+        if self.id_token != '':
+            headers.update({'Authorization': 'Bearer %s' % self.id_token})
         return headers
 
     def validate_token(self):
@@ -97,40 +97,30 @@ class SIATServer(models.Model):
         invoice_date = invoice_date[:23]        
         headers = self.get_default_headers()
         data = {
-            "NitEmisor": invoice.nit_empresa,
-            "RazonSocialEmisor": invoice.razon,
-            "Municipio": invoice.sucursal,
-            "Direccion": invoice.direccion,
-            "Telefono": invoice.company_id.phone or None,
-            "NombreRazonSocial": invoice.partner_id.name,
-            "CodigoTipoDocumentoIdentidad": invoice.tipo_documento,
-            "NumeroDocumento": invoice.nit,
-            "CodigoCliente": str(invoice.partner_id.ref),
-            "FechaEmision": invoice_date,
-            "CodigoSucursal": invoice.cod_sucursal,
-            "CodigoPuntoVenta": invoice.cod_puntoventa,
-            "NumeroFactura": invoice.number,
-            "MontoTotal": invoice.amount_total_sin,
-            "MontoTotalSujetoIva": invoice.amount_total_sin,
-            "CodigoMoneda": invoice.tipo_moneda,
-            "TipoCambio": invoice.tipo_cambio,
-            "MontoTotalMoneda": invoice.amount_total_sin,
-            "CodigoMetodoPago": invoice.metodo_pago,
-            "Leyenda": invoice.leyenda,
-            "TipoEmision": 1,
-            "Usuario": str(invoice.tipo_cambio),
-            "NombreIntegracion": invoice.integracion,
+            "id": invoice.id,
+            "extraCustomerAddress": invoice.direccion,
+            "additionalDiscount": invoice.discount_amount,
+            "name": invoice.partner_id.name,
+            "documentTypeCode": invoice.tipo_documento,
+            "documentNumber": invoice.nit,
+            "customerCode": str(invoice.partner_id.ref),
+            "emissionDate": invoice_date,
+            "branchId": invoice.cod_sucursal,
+            "branchNumber": invoice.cod_puntoventa,
+            "invoiceNumber": invoice.number,
+            "emailNotification": invoice.partner_id.email,
+            "currencyIso": invoice.tipo_moneda,
+            "exchangeRate": invoice.tipo_cambio,
+            "paymentMethodType": invoice.metodo_pago,
+            "userCode": str(invoice.usr_id),
             "Detalles": [
                 {
-                    "ActividadEconomica": l.actividad_sin,
-                    "CodigoProductoSin": int(l.cod_sin),
-                    "CodigoProducto": str(l.product_id.barcode),
-                    "Descripcion": l.product_id.name,
-                    "UnidadMedida": int(l.unidad_sin),
-                    "Cantidad": l.quantity,
-                    "PrecioUnitario": l.price_net_sin,
-                    "MontoDescuento": 0,
-                    "SubTotal": l.price_subtotal_sin,
+                    "productCode": str(l.product_id.barcode),
+                    "concept": l.product_id.name,
+                    "quantity": l.quantity,
+                    "unitPrice": l.price_net,
+                    "discountAmount": l.discount_amount,
+                    "subtotal": l.price_subtotal,
                 } for l in invoice.invoice_line_ids
             ]
         }
