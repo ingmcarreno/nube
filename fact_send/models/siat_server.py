@@ -27,7 +27,7 @@ class SIATServer(models.Model):
         'cancel': '/api/integrations/cancel',
         'compraventa': '/api/integrations/create-invoice/buy-and-sell',
     }""")
-    token = fields.Char('Token', default='')
+    id_token = fields.Char('Token', default='')
     state = fields.Selection(
         [
             ('enable', 'Enabled'),
