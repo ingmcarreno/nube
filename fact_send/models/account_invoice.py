@@ -8,16 +8,16 @@ _logger = logging.getLogger(__name__)
 
 class AccountInvoice(models.Model):
     _inherit = 'account.invoice'
-    cod_recepcion = fields.Char('Codigo Recepcion')
+    id_recepcion = fields.Char('Codigo Recepcion')
     estado_emision = fields.Char('Estado emision')
     fecha_emision = fields.Char('Fecha emision')
     cuf = fields.Char('CUF')
     cuis = fields.Char('CUIS', default='_')
     cufd = fields.Char('CUFD')
-    codigo_control = fields.Char('codigo_control')
+    emissionType = fields.Char('Tipo emision')
     link_qr = fields.Char('Link QR')
-    codigo_error = fields.Char('Codigo Error')
-    mensaje_respuesta = fields.Char('Mensaje respuesta')
+    externalId = fields.Char('external Id')
+    legend = fields.Char('Leyenda')
 
     def post_electronic_invoice(self):
         self.ensure_one()
@@ -34,14 +34,13 @@ class AccountInvoice(models.Model):
         rjson = json.loads(response.content)
         _logger.info(rjson)
         self.write({
-            "cod_recepcion": rjson["codigoRecepcion"],
-            "estado_emision": rjson["estadoEmisionEDOC"],
-            "fecha_emision": rjson["fechaEmision"] if rjson["fechaEmision"] is not None else False,
+            "id_recepcion": rjson["id"],
+            "number": rjson["invoiceNumber"],
+            "fecha_emision": rjson["emissionDate"] if rjson["emissionDate"] is not None else False,
             "cuf": rjson["cuf"],
-            "cuis": rjson["cuis"],
             "cufd": rjson["cufd"],
-            "codigo_control": rjson["codigoControl"],
-            "link_qr": rjson["linkCodigoQR"],
-            "codigo_error": rjson["codigoError"],
-            "mensaje_respuesta": rjson["mensajeRespuesta"]
+            "emissionType": rjson["emissionType"],
+            "link_qr": rjson["qrcodeString"],
+            "externalId": rjson["externalId"],
+            "legend": rjson["legend"]
         })
