@@ -24,7 +24,7 @@ class account_invoice(models.Model):
                                         ('8', 'DEPOSITO EN CUENTA')],
                              string='Metodo de Pago',
                              default='1')
-    integracion = fields.Char('Integracion',default='eDoc Gurusoft',store=True,readonly=True)
+    integracion = fields.Char('Integracion',default='kraken',store=True,readonly=True)
     amount_total_sin = fields.Float(
         string='Total SIN',
         compute='_compute_sin_prices_and_taxes'
