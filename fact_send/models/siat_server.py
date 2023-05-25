@@ -39,7 +39,7 @@ class SIATServer(models.Model):
         self.ensure_one()
         endpoints = eval(self.url_endpoints)
         url = endpoints.get('auth', '/auth')
-        credentials = (self.user_login, self.user_password)
+        credentials = (self.username, self.password)
         params = {'Id': self.service_id}
         response = requests.get(url, params=params, auth=credentials)
         if response.status_code == 200:
