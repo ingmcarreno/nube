@@ -17,17 +17,18 @@ class SIATServer(models.Model):
     ], string='Environment', default='test')
 
     name = fields.Char('Name Reference')
-    username = fields.Char('User')
-    password = fields.Char('Password')
+    user_login = fields.Char('User')
+    user_password = fields.Char('Password')
     rememberMe = fields.Boolean('Recordarme', default=True)
+    use_root = fields.Boolean('Use root address', default=True)
     service_id = fields.Char('Service ID')
     url_root = fields.Char('Server root URL')
     url_endpoints = fields.Text('Enpoints', help='dictionary', default="""{
         'auth': 'api/authenticate',
         'cancel': '/api/integrations/cancel',
-        'compraventa': '/api/integrations/create-invoice/buy-and-sell',
+        'compraventa': '',
     }""")
-    id_token = fields.Char('Token', default='')
+    token = fields.Char('Token', default='')
     state = fields.Selection(
         [
             ('enable', 'Enabled'),
@@ -39,18 +40,16 @@ class SIATServer(models.Model):
         self.ensure_one()
         endpoints = eval(self.url_endpoints)
         url = endpoints.get('auth', '/auth')
-        credentials = (self.username, self.password)
-        params = {'Id': self.service_id}
-        response = requests.get(url, params=params, auth=credentials)
+        credentials = (self.user_login, self.user_password)
+        headers = self.get_default_headers()
+        data = {'username': self.user_login,
+               'rememberMe': self.rememberMe,
+               'password': self.password,}
+        response = requests.get(url, data=json.dumps(data), headers=headers)
         if response.status_code == 200:
             result = response.json()
-            sp_date = result['expira'].split('T')
-            str_date = '%s %s' % (sp_date[0], sp_date[1][:8])
-            expiration = fields.datetime.strptime(
-                str_date, '%Y-%m-%d %H:%M:%S')
             self.write({
-                'id_token': result['id_token'],
-                'validity': expiration + timedelta(hours=4)
+                'id_token': result['id_token']
             })
             return True
         raise UserWarning(_('could not authenticate'))
@@ -94,12 +93,13 @@ class SIATServer(models.Model):
         invoice_date = invoice_date + timedelta(hours=-4)
         invoice_date = str(invoice_date)
         invoice_date = invoice_date.replace(' ', 'T')
-        invoice_date = invoice_date[:23]        
+        invoice_date = invoice_date[:23]      
+        invoice_date = invoice_date + 'Z'
         headers = self.get_default_headers()
         data = {
             "id": invoice.id,
             "extraCustomerAddress": invoice.direccion,
-            "additionalDiscount": invoice.discount_amount,
+            "additionalDiscount": 0,
             "name": invoice.partner_id.name,
             "documentTypeCode": invoice.tipo_documento,
             "documentNumber": invoice.nit,
@@ -112,14 +112,14 @@ class SIATServer(models.Model):
             "currencyIso": invoice.tipo_moneda,
             "exchangeRate": invoice.tipo_cambio,
             "paymentMethodType": invoice.metodo_pago,
-            "userCode": str(invoice.usr_id),
-            "Detalles": [
+            "userCode": invoice.create_uid.name,
+            "details": [
                 {
                     "productCode": str(l.product_id.barcode),
                     "concept": l.product_id.name,
                     "quantity": l.quantity,
-                    "unitPrice": l.price_net,
-                    "discountAmount": l.discount_amount,
+                    "unitPrice": l.price_unit,
+                    "discountAmount": 0,
                     "subtotal": l.price_subtotal,
                 } for l in invoice.invoice_line_ids
             ]
