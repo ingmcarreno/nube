@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "Kraken send Invoice",
+    'name': "API send Invoice",
 
     'summary': """
         Electronic Online invoicing by Bolivia's statements""",
@@ -9,7 +9,7 @@
         Online invoicing
     """,
 
-    'author': "MACS Consulting",
+    'author': "Mauricio Carreño S.",
     'website': "http://www.yourcompany.com",
     'category': 'account',
     'version': '0.1',
