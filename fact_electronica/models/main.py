@@ -24,46 +24,4 @@ class account_invoice(models.Model):
                                         ('8', 'DEPOSITO EN CUENTA')],
                              string='Metodo de Pago',
                              default='1')
-    integracion = fields.Char('Integracion',default='kraken',store=True,readonly=True)
-    amount_total_sin = fields.Float(
-        string='Total SIN',
-        compute='_compute_sin_prices_and_taxes'
-    )
 
-    @api.multi
-    @api.depends('invoice_line_ids.price_subtotal_sin')
-    def _compute_sin_prices_and_taxes(self):
-        self.amount_total_sin = sum(line.price_subtotal_sin for line in self.invoice_line_ids)
-
-class AccountInvoiceLine(models.Model):
-    _inherit = "account.invoice.line" 
-
-    unidad_sin = fields.Selection(related='product_id.unidad_sin', string="Unidad",store=True)
-    cod_sin = fields.Char(related='product_id.cod_sin', string="Codigo SIN",store=True)
-    actividad_sin = fields.Char(related='product_id.actividad_sin', string="Actividad SIN",store=True)
-    price_unit_sin = fields.Float(
-        string='Precio SIN',
-        compute='_compute_report_prices_and_taxes'
-    )
-    price_subtotal_sin = fields.Float(
-        string='Subtotal SIN',
-        compute='_compute_report_prices_and_taxes'
-    )
-    price_net_sin = fields.Float(
-        string='Neto SIN',
-        compute='_compute_report_prices_and_taxes'
-    )
-
-    @api.multi
-    @api.depends('price_unit', 'price_subtotal')
-    def _compute_report_prices_and_taxes(self):
-        for line in self:
-            price_unit_sin = line.price_unit            
-            price_net_sin = price_unit_sin * (
-                1 - (line.discount or 0.0) / 100.0)
-            price_net_sin = round(price_net_sin * 6.96, 2)
-            price_subtotal_sin = round(price_net_sin * line.quantity, 2)
-
-            line.price_subtotal_sin = price_subtotal_sin
-            line.price_unit_sin = price_unit_sin
-            line.price_net_sin = price_net_sin
