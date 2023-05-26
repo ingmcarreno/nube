@@ -8,16 +8,16 @@ _logger = logging.getLogger(__name__)
 
 class AccountInvoice(models.Model):
     _inherit = 'account.invoice'
-    id_recepcion = fields.Char('Codigo Recepcion')
+    cod_recepcion = fields.Char('Codigo Recepcion')
     estado_emision = fields.Char('Estado emision')
     fecha_emision = fields.Char('Fecha emision')
     cuf = fields.Char('CUF')
     cuis = fields.Char('CUIS', default='_')
     cufd = fields.Char('CUFD')
-    emissionType = fields.Char('Tipo emision')
+    codigo_control = fields.Char('Codigo control')
     link_qr = fields.Char('Link QR')
-    externalId = fields.Char('external Id')
-    legend = fields.Char('Leyenda')
+    externalId = fields.Char('Codigo Error')
+    mensaje_respuesta = fields.Char('Mensaje respuesta')
 
     def post_electronic_invoice(self):
         self.ensure_one()
@@ -34,13 +34,12 @@ class AccountInvoice(models.Model):
         rjson = json.loads(response.content)
         _logger.info(rjson)
         self.write({
-            "id_recepcion": rjson["id"],
-            "number": rjson["invoiceNumber"],
-            "fecha_emision": rjson["emissionDate"] if rjson["emissionDate"] is not None else False,
             "cuf": rjson["cuf"],
             "cufd": rjson["cufd"],
-            "emissionType": rjson["emissionType"],
-            "link_qr": rjson["qrcodeString"],
-            "externalId": rjson["externalId"],
-            "legend": rjson["legend"]
+            "fecha_emision": rjson["emissionDate"],
+            "estado_emision": rjson["emissionType"],
+            "cuis": rjson["id"],
+            "codigo_control": rjson["invoiceNumber"],           
+            "mensaje": rjson["legend"]
+            "link_qr": rjson["qrcodeString"]
         })
