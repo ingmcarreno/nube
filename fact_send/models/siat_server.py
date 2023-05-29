@@ -119,7 +119,7 @@ class SIATServer(models.Model):
                     "concept": l.product_id.name,
                     "quantity": l.quantity,
                     "unitPrice": l.price_unit,
-                    "discountAmount": 0,
+                    "discountAmount": (l.price_unit * l.discount)/100,
                     "subtotal": l.price_subtotal,
                 } for l in invoice.invoice_line_ids
             ]
