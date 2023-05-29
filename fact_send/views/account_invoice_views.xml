@@ -9,7 +9,7 @@
                 <xpath expr="//header/button[1]" position="after">
                     <field name="cuis" invisible="1"/>
                     <button name="post_electronic_invoice" type="object" string="Enviar SIAT" attrs="{'invisible': [('cuis', '!=', '_')]}"/>
-                    <button name="cancel_electronic_invoice" type="object" string="Cancelar Factura" attrs="{'invisible': [('state', '==', 'cancel')]}"/>
+                    <button name="cancel_electronic_invoice" type="object" string="Cancelar SIAT" attrs="{'invisible': [('state', '==', 'cancel')]}"/>
                 </xpath>
             </field>
         </record>
