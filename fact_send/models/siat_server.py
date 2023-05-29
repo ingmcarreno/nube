@@ -127,3 +127,22 @@ class SIATServer(models.Model):
         _logger.info(data)
         response = requests.post(url, data=json.dumps(data), headers=headers)
         return response
+    
+    
+    def cancel_invoice(self, invoice):
+        self.validate_token()
+        url_base = self.url_root if self.use_root is True else ''
+        endpoints = eval(self.url_endpoints)
+        end_point = endpoints.get('cancel', '/api/integrations/cancel')
+        url = url_base + end_point
+        siatReason = '912'
+        invoiceType = 'WEB'
+        headers = self.get_default_headers()
+        data = {
+            "cuf": invoice.cuf,
+            "invoiceType": invoiceType,
+            "siatReason": siatReason,
+        }
+        _logger.info(data)
+        response = requests.put(url, data=json.dumps(data), headers=headers)
+        return response
