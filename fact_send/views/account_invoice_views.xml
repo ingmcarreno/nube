@@ -8,7 +8,8 @@
             <field name="arch" type="xml">               
                 <xpath expr="//header/button[1]" position="after">
                     <field name="cuis" invisible="1"/>
-                    <button name="post_electronic_invoice" type="object" string="Factura Electronica" attrs="{'invisible': [('cuis', '!=', '_')]}"/>
+                    <button name="post_electronic_invoice" type="object" string="Enviar SIAT" attrs="{'invisible': [('cuis', '!=', '_')]}"/>
+                    <button name="cancel_electronic_invoice" type="object" string="Cancelar Factura" attrs="{'invisible': [('state', '==', 'cancel')]}"/>
                 </xpath>
             </field>
         </record>
