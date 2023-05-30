@@ -45,7 +45,7 @@ class SIATServer(models.Model):
         data = {'username': self.user_login,
                'rememberMe': self.rememberMe,
                'password': self.user_password}
-        response = requests.get(url, data=json.dumps(data), headers=headers)
+        response = requests.post(url, data=json.dumps(data), headers=headers)
         if response.status_code == 200:
             result = response.json()            
             now = datetime.now()
@@ -74,7 +74,7 @@ class SIATServer(models.Model):
             'Content-type': 'application/json',
         }
         if self.token != '':
-            headers.update({'Authorization': 'Bearer %s' % self.id_token})
+            headers.update({'Authorization': 'Bearer %s' % self.token})
         return headers
 
     def validate_token(self):
