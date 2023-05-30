@@ -73,7 +73,7 @@ class SIATServer(models.Model):
         headers = {
             'Content-type': 'application/json',
         }
-        if self.id_token != '':
+        if self.token != '':
             headers.update({'Authorization': 'Bearer %s' % self.id_token})
         return headers
 
