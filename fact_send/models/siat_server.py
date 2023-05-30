@@ -136,7 +136,7 @@ class SIATServer(models.Model):
         return response
     
     
-    def cancel_invoice(self, invoice):
+    def cancel_invoice_siat(self, invoice):
         self.validate_token()
         url_base = self.url_root if self.use_root is True else ''
         endpoints = eval(self.url_endpoints)
