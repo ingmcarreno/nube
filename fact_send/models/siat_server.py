@@ -55,7 +55,7 @@ class SIATServer(models.Model):
             validity_date = validity_date.replace(' ', 'T')
             validity_date = validity_date[:23]
             self.write({
-                'id_token': result['id_token'],
+                'token': result['id_token'],
                 'validity': validity_date
             })
             return True
