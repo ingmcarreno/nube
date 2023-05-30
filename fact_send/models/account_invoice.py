@@ -53,7 +53,7 @@ class AccountInvoice(models.Model):
         siat_server = self.env['siat.server'].search(server_dom, limit=1)
         if siat_server.id is False:
             raise ValidationError(_('An enabled sever is required'))
-        response = siat_server.cancel_invoice(self)
+        response = siat_server.cancel_invoice_siat(self)
         if response.status_code not in [200, 201, 202]:
             _logger.info(response.content)
             raise ValidationError(_('Could not validate server response'))            
