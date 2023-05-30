@@ -42,7 +42,6 @@ class AccountInvoice(models.Model):
             "codigo_control": rjson["invoiceNumber"],           
             "mensaje": rjson["legend"],
             "link_qr": rjson["qrcodeString"]
-            '
         })
       
     def cancel_electronic_invoice(self):
