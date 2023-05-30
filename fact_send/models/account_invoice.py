@@ -40,8 +40,9 @@ class AccountInvoice(models.Model):
             "estado_emision": rjson["emissionType"],
             "cuis": rjson["id"],
             "codigo_control": rjson["invoiceNumber"],           
-            "mensaje": rjson["legend"]
+            "mensaje": rjson["legend"],
             "link_qr": rjson["qrcodeString"]
+            '
         })
       
     def cancel_electronic_invoice(self):
