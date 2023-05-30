@@ -44,7 +44,7 @@ class SIATServer(models.Model):
         headers = self.get_default_headers()
         data = {'username': self.user_login,
                'rememberMe': self.rememberMe,
-               'password': self.password,}
+               'password': self.user_password}
         response = requests.get(url, data=json.dumps(data), headers=headers)
         if response.status_code == 200:
             result = response.json()            
