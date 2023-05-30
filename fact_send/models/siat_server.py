@@ -47,9 +47,16 @@ class SIATServer(models.Model):
                'password': self.password,}
         response = requests.get(url, data=json.dumps(data), headers=headers)
         if response.status_code == 200:
-            result = response.json()
+            result = response.json()            
+            now = datetime.now()
+            validity_date = datetime.strptime(str(now), "%Y-%m-%d %H:%M:%S.%f")
+            validity_date = validity_date + timedelta(days=30)
+            validity_date = str(validity_date)
+            validity_date = validity_date.replace(' ', 'T')
+            validity_date = validity_date[:23]
             self.write({
-                'id_token': result['id_token']
+                'id_token': result['id_token'],
+                'validity': validity_date
             })
             return True
         raise UserWarning(_('could not authenticate'))
@@ -120,7 +127,7 @@ class SIATServer(models.Model):
                     "quantity": l.quantity,
                     "unitPrice": l.price_unit,
                     "discountAmount": (l.price_unit * l.discount)/100,
-                    "subtotal": l.price_subtotal,
+                    "subtotal": (l.price_unit * l.quantity) - ((l.price_unit * l.discount)/100),
                 } for l in invoice.invoice_line_ids
             ]
         }
@@ -135,7 +142,7 @@ class SIATServer(models.Model):
         endpoints = eval(self.url_endpoints)
         end_point = endpoints.get('cancel', '/api/integrations/cancel')
         url = url_base + end_point
-        siatReason = '912'
+        siatReason = '1'
         invoiceType = 'WEB'
         headers = self.get_default_headers()
         data = {
